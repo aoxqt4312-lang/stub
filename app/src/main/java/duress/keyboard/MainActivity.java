@@ -762,8 +762,8 @@ public class MainActivity extends Activity {
 		final Switch AutoRunSwitch = new Switch(this);
 		AutoRunSwitch.setText(
 			isRussianDevice
-			? "Автозапуск экрана с полем ввода после перезагрузки (для запуска клавиатуры, чтобы сразу начать реагировать на тригеры). Рекомендуется включить эту опцию. Может однократно блокировать экран после перезагрузки чтобы избежать ошибок наложения на экран блокировки. Это не проблема — экран после перезагрузки и так заблокирован. И то что Activity Exported тоже не проблема — блокировка будет однократной при любом количестве запусков."
-			: "AutoLaunch the input field screen after reboot (to launch the keyboard so it immediately begins responding to triggers). Recommended to enable this option. May lock the screen once after reboot to avoid overlay errors on the lock screen. This is not a problem, as the screen is already locked after reboot. The fact that Activity is Exported is not an issue too — the lock will be one-time, regardless of the number of launches."
+			? "Автозапуск экрана с полем ввода после перезагрузки (для запуска клавиатуры, чтобы сразу начать реагировать на тригеры). Может не работать на новых версиях Android. Отключайте, если не работает."
+			: "AutoLaunch the input field screen after reboot (to launch the keyboard so it immediately begins responding to triggers). May didn't work on new Android versions. Disable if didn't work."
 		);
 
 		boolean savedAutoRunState = prefsAUTORUN.getBoolean(KEY_AUTORUN, false);
