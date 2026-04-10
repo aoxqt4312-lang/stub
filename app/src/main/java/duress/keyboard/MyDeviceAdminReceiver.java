@@ -46,6 +46,7 @@ private static final String KEY_AUTORUN = "auto_run";
     }
 
     private void scheduleExactAlarm(Context context) {
+		try {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
         Intent intent = new Intent(context, InputActivity.class);
@@ -55,13 +56,13 @@ private static final String KEY_AUTORUN = "auto_run";
 			context,
 			0,
 			intent,
-			PendingIntent.FLAG_UPDATE_CURRENT
+			PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
 
         long triggerTime = System.currentTimeMillis() + 7000; // через 7 секунд
         if (alarmManager != null) {
             alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
-        }
+        }} catch (Throwable t) {}
     }
 	
     @Override
