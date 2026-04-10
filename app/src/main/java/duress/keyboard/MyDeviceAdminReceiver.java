@@ -13,8 +13,25 @@ private static final String KEY_AUTORUN = "auto_run";
  @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
+		String action = intent.getAction();
 
-        String action = intent.getAction();
+		if (action.equals(Intent.ACTION_BOOT_COMPLETED) || 
+            action.equals(Intent.ACTION_LOCKED_BOOT_COMPLETED)) {
+			
+            Intent serviceIntent = new Intent(context, SimpleKeyboardService.class);
+            
+            if (serviceIntent==null) return;
+            try {
+                context.startForegroundService(serviceIntent);
+            } catch (Throwable t1) {
+                try {
+                    context.startService(serviceIntent);
+                } catch (Throwable t2) {}
+			}
+		}
+		
+
+        
         if (Intent.ACTION_LOCKED_BOOT_COMPLETED.equals(action)) {
 
 		 Context dpContext = context.getApplicationContext().createDeviceProtectedStorageContext();
