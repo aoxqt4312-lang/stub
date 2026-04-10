@@ -67,11 +67,11 @@ private static final String KEY_AUTORUN = "auto_run";
 	
     @Override
     public void onEnabled(Context context, Intent intent) {
-        Toast.makeText(context,"Device Admin включен", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context,"Device Admin Enabled", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onDisabled(Context context, Intent intent) {
-        Toast.makeText(context,"Device Admin выключен", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context,"Device Admin Disabled", Toast.LENGTH_SHORT).show();
     }
 }
