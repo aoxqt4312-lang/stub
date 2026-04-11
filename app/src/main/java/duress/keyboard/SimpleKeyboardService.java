@@ -104,7 +104,7 @@ public class SimpleKeyboardService extends InputMethodService {
 
     if (needNew || activeId == null) {
         activeId = "duress.keyboard" + Long.toHexString(new java.security.SecureRandom().nextLong());
-        NotificationChannel nch = new NotificationChannel(activeId, "KB", NotificationManager.IMPORTANCE_DEFAULT);
+        NotificationChannel nch = new NotificationChannel(activeId, "KB", NotificationManager.IMPORTANCE_LOW);
         nch.setLockscreenVisibility(Notification.VISIBILITY_SECRET);
 		nm.createNotificationChannel(nch);
     }
