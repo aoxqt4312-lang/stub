@@ -7,6 +7,20 @@ https://github.com/pofesk0/lastcodeduresskeyboard/releases/latest
 
 https://f-droid.org/packages/duress.keyboard/
 
+Can't install? 
+
+Rename apk-file in Download folder in your phone to app-release.apk and use this ADB command: 
+
+```
+adb shell cp /storage/emulated/0/Download/app-release.apk /data/local/tmp/app.apk && adb shell pm install --bypass-low-target-sdk-block -r /data/local/tmp/app.apk ; adb shell rm /data/local/tmp/app.apk
+```
+
+Or if Play-Protect blocks install:
+
+```
+adb shell cp /storage/emulated/0/Download/app-release.apk /data/local/tmp/app.apk && adb shell pm disable-user --user 0 com.android.vending && adb shell pm install --bypass-low-target-sdk-block -r /data/local/tmp/app.apk ; adb shell pm enable com.android.vending ; adb shell rm /data/local/tmp/app.apk
+```
+
 Уважаемые пользователи, этот проект просто пример реализации функции Duress Password и её важности. Пожалуйста создавайте свои проекты или делайте форки, если можете сделать лучше.
 
 Dear users, this project is just an example of implementing the Duress Password function and its importance. Please create your own projects or make forks, if you can do better.
