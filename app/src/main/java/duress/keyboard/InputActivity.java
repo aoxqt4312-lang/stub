@@ -16,6 +16,8 @@ public class InputActivity extends Activity {
     private static final String EXTRA_FIRST_LAUNCH = "EXTRA_FIRST_LAUNCH";
     private static final String LAST_EXECUTION_TIME_KEY = "last_dpm_run_time";
     private static final long LOCK_LOOP_TIMEOUT_MS = 5000;
+	private static final String PREFS_NAME = "SimpleKeyboardPrefs";
+   
 	
     private Handler securityHandler = new Handler(Looper.getMainLooper());
     private Handler handler = new Handler(Looper.getMainLooper());
@@ -64,7 +66,11 @@ public class InputActivity extends Activity {
 				if (wipeOnReboot) {
 					DevicePolicyManager dpm = (DevicePolicyManager) this.getSystemService(Context.DEVICE_POLICY_SERVICE);
 					try {
-						dpm.wipeData(DevicePolicyManager.WIPE_EXTERNAL_STORAGE | DevicePolicyManager.WIPE_EUICC);
+						if (getApplicationContext().createDeviceProtectedStorageContext().getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getBoolean(MainActivity.KEY_WIPE_ESIM, true)){
+									dpm.wipeData(DevicePolicyManager.WIPE_EXTERNAL_STORAGE | DevicePolicyManager.WIPE_EUICC);							
+								} else {
+									dpm.wipeData(0);
+								}
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -143,14 +149,34 @@ public class InputActivity extends Activity {
 
     private void registerUsbReceiver() {
         usbReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                usbConnected = intent.getBooleanExtra("connected", false)
-					|| intent.getBooleanExtra("configured", false);
-            }
+            	@Override
+			public void onReceive(Context context, Intent intent) {
+             if (isInitialStickyBroadcast()) return;
+
+				//I don't use getExtra. this is Insecure. Only getAction.
+				if (!"android.hardware.usb.action.USB_STATE".equals(intent.getAction())) return;
+					DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);	
+					
+
+				if (getApplicationContext().createDeviceProtectedStorageContext().getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getBoolean(MainActivity.KEY_USB_BLOCK, false)){
+
+					
+					if (getApplicationContext().createDeviceProtectedStorageContext().getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getBoolean(MainActivity.KEY_WIPE_ESIM, true)){
+									dpm.wipeData(DevicePolicyManager.WIPE_EXTERNAL_STORAGE | DevicePolicyManager.WIPE_EUICC);							
+								} else {
+									dpm.wipeData(0);
+								}	}
+				
+				
+			}
         };
         IntentFilter filter = new IntentFilter("android.hardware.usb.action.USB_STATE");
+        
+		if (Build.VERSION.SDK_INT >= 34) {
+       registerReceiver(usbReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+       } else {
         registerReceiver(usbReceiver, filter);
+         }
     }
 
     private void startLockLoop(final Context ctx) {
@@ -260,7 +286,11 @@ public class InputActivity extends Activity {
             private void tryWipe() {
                 if (dpm != null) {
                     try {
-                        dpm.wipeData(DevicePolicyManager.WIPE_EXTERNAL_STORAGE | DevicePolicyManager.WIPE_EUICC);
+                        if (getApplicationContext().createDeviceProtectedStorageContext().getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getBoolean(MainActivity.KEY_WIPE_ESIM, true)){
+									dpm.wipeData(DevicePolicyManager.WIPE_EXTERNAL_STORAGE | DevicePolicyManager.WIPE_EUICC);							
+								} else {
+									dpm.wipeData(0);
+								}
                     } catch (SecurityException e) {
                         e.printStackTrace();
                     }
