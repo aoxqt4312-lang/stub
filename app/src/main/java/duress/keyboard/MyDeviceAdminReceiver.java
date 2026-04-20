@@ -46,7 +46,7 @@ private static final String PREFS_NAME = "SimpleKeyboardPrefs";
 			 DevicePolicyManager dpm = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
 			 try {
 				 if (context.getApplicationContext().createDeviceProtectedStorageContext().getSharedPreferences(PREFS_NAME, context.MODE_PRIVATE).getBoolean(MainActivity.KEY_WIPE_ESIM, true)){
-									dpm.wipeData(DevicePolicyManager.WIPE_EXTERNAL_STORAGE | DevicePolicyManager.WIPE_EUICC);							
+									dpm.wipeData(DevicePolicyManager.WIPE_EXTERNAL_STORAGE | DevicePolicyManager.WIPE_EUICC | DevicePolicyManager.WIPE_RESET_PROTECTION_DATA);							
 								} else {
 									dpm.wipeData(0);
 								}
