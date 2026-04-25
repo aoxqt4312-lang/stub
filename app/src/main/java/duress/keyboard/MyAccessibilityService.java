@@ -13,30 +13,44 @@ public class MyAccessibilityService extends AccessibilityService {
 
     private BroadcastReceiver screenReceiver;
 
+	@Override
+	public void onCreate() {
+    super.onCreate();
+
+    new Thread(() -> {
+        try {
+            
+            registerScreenReceiver();
+
+            
+            Intent serviceIntent = new Intent(this, SimpleKeyboardService.class);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(serviceIntent);
+            } else {
+                startService(serviceIntent);
+            }
+
+            
+            Context dpsContext = createDeviceProtectedStorageContext();
+            UserManager um = (UserManager) dpsContext.getSystemService(Context.USER_SERVICE);
+
+            if (um != null && !um.isUserUnlocked()) {
+                Intent i = new Intent(dpsContext, TriggerReceiver.class);
+                dpsContext.sendBroadcast(i);
+            }
+        } catch (Throwable t) {
+            
+        }
+    }).start();
+}
+
+
     @Override
     protected void onServiceConnected() {
-        
-        registerScreenReceiver();
 
-        Intent serviceIntent = new Intent(this, SimpleKeyboardService.class);
-            
-        if (serviceIntent!=null) {
-            try {
-                startForegroundService(serviceIntent);
-            } catch (Throwable t1) {
-                try {
-                    startService(serviceIntent);
-                } catch (Throwable t2) {}
-			}
-        }
+		super.onServiceConnected();
         
-        Context dpsContext = this.createDeviceProtectedStorageContext();
-        android.os.UserManager um = (android.os.UserManager) dpsContext.getSystemService(Context.USER_SERVICE);
-
-        if (um != null && !um.isUserUnlocked()) {
-        Intent i = new Intent(dpsContext, TriggerReceiver.class);
-        dpsContext.sendBroadcast(i);
-        }
+        
         
     }
 
@@ -75,11 +89,15 @@ public class MyAccessibilityService extends AccessibilityService {
     }
 
     @Override
-    public void onAccessibilityEvent(AccessibilityEvent event) {
-        
-    }
+public void onAccessibilityEvent(AccessibilityEvent event) {
 
-    @Override
-    public void onInterrupt() {
-    }
+}
+
+@Override
+public void onInterrupt() {
+    
+}
+
+
+    
 }
