@@ -1,1 +1,0 @@
-Keyboard that reacts to triggers and performs security actions
