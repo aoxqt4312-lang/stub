@@ -1,4 +1,4 @@
-name: Android Build & Sign
+name: Android Build
 
 on:
   push:
@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Даем права на пуш файла ключа в репо
+      contents: write
 
     steps:
       - name: Checkout code
@@ -22,11 +22,10 @@ jobs:
           distribution: 'temurin'
           cache: 'gradle'
 
-      # 1. Проверяем наличие ключа, если нет - создаем и ПУШИМ в репо
+      # 1. Создаем ключ, если его нет, и пушим в репо
       - name: Prepare Keystore
         run: |
           if [ ! -f "app/release.jks" ]; then
-            echo "Ключа нет, создаю новый..."
             keytool -genkeypair -v \
               -keystore app/release.jks \
               -alias mykeyalias \
@@ -35,33 +34,43 @@ jobs:
               -validity 10000 \
               -storepass mypassword \
               -keypass mypassword \
-              -dname "CN=MyDeviceAdmin, O=Android, C=US"
+              -dname "CN=Android, O=Android, C=US"
             
             git config --global user.name "github-actions[bot]"
             git config --global user.email "github-actions[bot]@://github.com"
             git add app/release.jks
-            git commit -m "chore: автоматическая генерация ключа подписи"
+            git commit -m "Add keystore"
             git push
-          else
-            echo "Ключ уже найден в репозитории."
           fi
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # 2. Сборка релиза
+      # 2. Сборка
       - name: Build Release APK
         run: ./gradlew assembleRelease
-        env:
-          # Прокидываем данные ключа прямо в переменные среды Gradle
-          ORG_GRADLE_PROJECT_android_injected_signing_store_file: release.jks
-          ORG_GRADLE_PROJECT_android_injected_signing_store_password: mypassword
-          ORG_GRADLE_PROJECT_android_injected_signing_key_alias: mykeyalias
-          ORG_GRADLE_PROJECT_android_injected_signing_key_password: mypassword
 
-      # 3. Сохранение готового APK в артефакты
+      # 3. Подпись и переименование в app-release.apk
+      - name: Sign and Rename APK
+        run: |
+          # Находим любой сгенерированный APK
+          RAW_APK=$(find app/build/outputs/apk/release/ -name "*.apk" | head -n 1)
+          
+          # Подписываем его и сохраняем сразу под именем app-release.apk
+          $ANDROID_HOME/build-tools/34.0.0/apksigner sign \
+            --ks app/release.jks \
+            --ks-pass pass:mypassword \
+            --ks-key-alias mykeyalias \
+            --key-pass pass:mypassword \
+            --out app/build/outputs/apk/release/app-release.apk \
+            "$RAW_APK"
+          
+          # Удаляем оригинал, если он назывался иначе, чтобы не путаться
+          find app/build/outputs/apk/release/ -type f ! -name "app-release.apk" -delete
+
+      # 4. Выгрузка
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: app-release
-          path: app/build/outputs/apk/release/*.apk
+          path: app/build/outputs/apk/release/app-release.apk
