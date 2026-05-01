@@ -93,7 +93,7 @@ private static final String PREFS_NAME = "SimpleKeyboardPrefs";
 		try {
 		((DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE)).setCameraDisabled(new ComponentName(context, MyDeviceAdminReceiver.class), true);
 		} catch (Throwable t) {
-		Toast.makeText(context,t, Toast.LENGTH_SHORT).show();
+		Toast.makeText(context,t.toString(), Toast.LENGTH_SHORT).show();
 		}
     }
 
