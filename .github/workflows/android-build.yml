@@ -1,48 +1,30 @@
-name: Android Build
+name: Save File to Repo
 
 on:
   push:
-    branches: [ "main" ]
-  workflow_dispatch:
+    branches:
+      - main  # Или название твоей основной ветки
+  workflow_dispatch: # Позволяет запускать вручную
 
 jobs:
-  build:
+  save_file_job:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Обязательно: даем права на запись в репозиторий
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-          cache: 'gradle'
-
-      - name: Prepare Keystore
+      - name: Create a file
         run: |
-          if [ ! -f "my-release-key.jks" ]; then
-            echo "Ключа нет, генерирую..."
-            keytool -genkey -v -keystore my-release-key.jks \
-              -keyalg RSA -keysize 2048 -validity 10000 \
-              -alias my-key-alias -storepass mypassword -keypass mypassword \
-              -dname "CN=Android, O=Android, C=US"
-          else
-            echo "Ключ уже существует, использую его."
-          fi
+          echo "Этот текст будет в файле" > myfile.txt
+          echo "Дата создания: $(date)" >> myfile.txt
 
-      - name: Build and Sign Release APK
+      - name: Commit and Push
         run: |
-          chmod +x gradlew
-          ./gradlew assembleRelease \
-            -Pandroid.injected.signing.store.file=$(pwd)/my-release-key.jks \
-            -Pandroid.injected.signing.store.password=mypassword \
-            -Pandroid.injected.signing.key.alias=my-key-alias \
-            -Pandroid.injected.signing.key.password=mypassword
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-release
-          path: app/build/outputs/apk/release/*.apk
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@://github.com"
+          git add myfile.txt
+          # Проверяем, есть ли изменения, чтобы не упасть с ошибкой, если файл не изменился
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-save file" && git push)
