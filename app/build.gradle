@@ -28,6 +28,6 @@ buildTypes {
 
 }
 
-dependencies {
-implementation fileTree(dir: 'libs', include: ['*.jar'])
-}
+dependencies {  
+implementation ("io.github.confidenseuide:BackgroundWorkAroundLib:5.0")  
+}        
