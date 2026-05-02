@@ -11,7 +11,7 @@ ATTENTION: THIS IS A DEMONSTRATIONAL PROJECT. IF YOU DO NOT OVERRIDE ALL METHODS
 ВНИМАНИЕ: ЭТО ДЕМОНСТРАЦИОННЫЙ ПРОЕКТ. ЕСЛИ ВЫ НЕ ПЕРЕОПРЕДЕЛИТЕ ВСЕ МЕТОДЫ, ОН МОЖЕТ ВОСПРОИЗВОДИТЬ ЗВУК ДЛЯ ДЕМОНСТРАЦИИ СВОЕЙ РАБОТЫ. В ЭТОМ ПРИМЕРЕ УЖЕ ВСЕ МЕТОДЫ ПЕРЕОПРЕДЕЛЕНЫ.
 */
 
-package ; //your package name. (Must match the path).
+package duress.keyboard; //your package name. (Must match the path).
 
 public class RiderService extends background.work.around.RiderService {
 
